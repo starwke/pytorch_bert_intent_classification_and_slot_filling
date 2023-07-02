@@ -1,0 +1,13 @@
+# vscode config
+.vscode/
+
+# log file
+logs/
+
+# train histories and result
+checkpoints/
+
+optuna.db
+
+# python compile file
+__pycache__/

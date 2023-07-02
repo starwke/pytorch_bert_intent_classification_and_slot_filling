@@ -30,7 +30,7 @@ class Processor:
     @classmethod
     def get_examples(cls, path, set_type):
         raw_examples = []
-        with open(path, 'r') as fp:
+        with open(path, 'r', encoding='utf8') as fp:
             data = eval(fp.read())
         for i, d in enumerate(data):
             text = d['text']
@@ -67,6 +67,7 @@ def convert_example_to_feature(ex_idx, example, tokenizer, config):
             for i in range(start + 1, end):
                 token_label_ids[i] = config.nerlabel2id['I-' + k]
     if len(token_label_ids) >= config.max_len - 2:
+        token_label_ids = token_label_ids[0 : config.max_len - 2]
         token_label_ids = [0] + token_label_ids + [0]
     else:
         token_label_ids = [0] + token_label_ids + [0] + [0] * (config.max_len - len(token_label_ids) - 2)
@@ -87,14 +88,14 @@ def convert_example_to_feature(ex_idx, example, tokenizer, config):
     seq_label_ids  = torch.tensor(seq_label_ids, requires_grad=False)
     token_label_ids = torch.tensor(token_label_ids, requires_grad=False)
 
-    if ex_idx < 3:
-        print(f'*** {set_type}_example-{ex_idx} ***')
-        print(f'text: {text}')
-        print(f'input_ids: {input_ids}')
-        print(f'attention_mask: {attention_mask}')
-        print(f'token_type_ids: {token_type_ids}')
-        print(f'seq_label_ids: {seq_label_ids}')
-        print(f'token_label_ids: {token_label_ids}')
+    # if ex_idx < 3:
+    #     print(f'*** {set_type}_example-{ex_idx} ***')
+    #     print(f'text: {text}')
+    #     print(f'input_ids: {input_ids}')
+    #     print(f'attention_mask: {attention_mask}')
+    #     print(f'token_type_ids: {token_type_ids}')
+    #     print(f'seq_label_ids: {seq_label_ids}')
+    #     print(f'token_label_ids: {token_label_ids}')
 
     feature = InputFeature(
         input_ids,
@@ -118,5 +119,5 @@ def get_features(raw_examples, tokenizer, args):
 if __name__ == '__main__':
     args = Args()
     raw_examples = Processor.get_examples('./data/test_process.json', 'test')
-    tokenizer = BertTokenizer.from_pretrained('../../model_hub/chinese-bert-wwm-ext/')
+    tokenizer = BertTokenizer.from_pretrained('../../ProjectsNLP/models/model-hub/chinese_wwm_ext_pytorch/')
     features = get_features(raw_examples, tokenizer, args)
